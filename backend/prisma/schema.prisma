@@ -19,7 +19,7 @@ model User {
 model Chat {
   id        String    @id   @default(uuid())
   name      String?
-  isGroup   Bool
+  isGroup   Boolean
   users     User[]    @relation("UserChats")
   messages  Message[] 
   createdAt DateTime  @default(now())

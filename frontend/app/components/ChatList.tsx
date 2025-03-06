@@ -1,5 +1,6 @@
 import { NavLink } from "react-router";
 import type { Chat } from "types/chat.interface";
+import Button from "./ui/Button";
 
 export interface ChatListProps {
   chats: Chat[],
@@ -21,7 +22,7 @@ function ChatItem({ chat }: { chat: Chat }) {
 
   return (
     <li className="bg-indigo-950 " key={chat.id}>
-      <NavLink className="block px-4 py-2 text-xl" to={chat.id}>{getChatName()}</NavLink>
+      <Button className="text-left" size="full"><NavLink className="block px-4 text-xl" to={chat.id}>{getChatName()}</NavLink></Button>
     </li>
   );
 }

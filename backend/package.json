@@ -10,15 +10,15 @@
   "dependencies": {
     "@elysiajs/cors": "^1.2.0",
     "@elysiajs/jwt": "^1.2.0",
-    "@elysiajs/swagger": "^1.2.0",
-    "@prisma/client": "^6.2.1",
+    "@elysiajs/swagger": "^1.2.2",
+    "@prisma/client": "^6.4.1",
     "elysia": "latest",
-    "openid-client": "^6.1.7"
+    "openid-client": "^6.3.3"
   },
   "devDependencies": {
     "@types/openid-client": "^3.7.0",
     "bun-types": "latest",
-    "prisma": "^6.2.1"
+    "prisma": "^6.4.1"
   },
   "module": "src/main.js"
 }

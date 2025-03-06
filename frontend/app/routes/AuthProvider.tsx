@@ -14,7 +14,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   const user = await res.json();
 
-  return { token, user }; 
+  return { token, user };
 }
 
 export function meta({}: Route.MetaArgs) {

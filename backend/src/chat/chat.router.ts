@@ -17,7 +17,7 @@ export const chatRouter = new Elysia({ prefix: "/chats" })
   {  
     isSignIn: true
   })
-  .post("/create-private", async ({ body: { userId }, getSignedUser, createPrivateChat }) => {
+  .post("/private", async ({ body: { userId }, getSignedUser, createPrivateChat }) => {
     const user = getSignedUser();
 
     const chat = await createPrivateChat([user.id, userId]);
@@ -32,7 +32,7 @@ export const chatRouter = new Elysia({ prefix: "/chats" })
     }),
     isSignIn: true,
   })
-  .post("/create-group", async ({ body, getSignedUser, createGroup }) => {
+  .post("/group", async ({ body, getSignedUser, createGroup }) => {
     const user = getSignedUser();
 
     if (body.initialUsers.length < 1) return { status: 400, message: "Bad request" };
@@ -49,15 +49,18 @@ export const chatRouter = new Elysia({ prefix: "/chats" })
       initialUsers: t.Array(t.String()),
     })
   })
-  .get("/:id", async ({ params: { id }, getChatWithMessages, getSignedUser }) => {
+  .get("/:id", async ({ set, params: { id }, getChatWithMessages, getSignedUser }) => {
     const user = getSignedUser();
     const chat = await getChatWithMessages(id, user.id);
 
-    if (!chat) return { status: 404, messages: "Not Found" };
+    if (!chat) {
+        set.status = 404
+        return { status: 404, messages: "Not Found" };
+    }
     
     return { status: 200, chat };
   }, { isSignIn: true })
-  .post("/send-msg", async ({ server, body, getSignedUser, createMessage, getChatIfUserIn, getUsersFromChat }) => {
+  .post("/msg", async ({ server, body, getSignedUser, createMessage, getChatIfUserIn, getUsersFromChat }) => {
     const user = getSignedUser();
     const chat = await getChatIfUserIn(user.id, body.chatId);
 
@@ -71,8 +74,8 @@ export const chatRouter = new Elysia({ prefix: "/chats" })
     
     users?.forEach(user => server?.publish(`notify:${user.id}`, JSON.stringify(msg)));
 
-    return { status: 201, message: "Message has been sent" };
-  }, { isSignIn: true, canSend: true, body: t.Object({ chatId: t.String(), content: t.String() }) })
+    return { status: 201, msg };
+  }, { isSignIn: true, body: t.Object({ chatId: t.String(), content: t.String() }) })
   .ws("/", {
     query: t.Object({
       token: t.String(),
