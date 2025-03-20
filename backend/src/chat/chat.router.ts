@@ -4,100 +4,96 @@ import { userRepo, userService } from "../user";
 import { jwt } from "@elysiajs/jwt";
 
 export const chatRouter = new Elysia({ prefix: "/chats" })
-  .use(jwt({ name: "jwt", secret: process.env.JWT_SECRET! }))
-  // .use(chatService)
-  .use(chatRepo)
-  .use(userService)
-  .use(userRepo)
-  .get("/", async ({ getSignedUser, getUsersChats }) => {
-    const user = getSignedUser();
+    .use(jwt({ name: "jwt", secret: process.env.JWT_SECRET! }))
+// .use(chatService)
+    .use(chatRepo)
+    .use(userService)
+    .use(userRepo)
+    .get("/", async ({ getSignedUser, getUsersChats }) => {
+        const user = getSignedUser();
 
-    return await getUsersChats(user.id)!;
-  }, 
-  {  
-    isSignIn: true
-  })
-  .post("/private", async ({ body: { userId }, getSignedUser, createPrivateChat }) => {
-    const user = getSignedUser();
-
-    const chat = await createPrivateChat([user.id, userId]);
-
-    if (chat) return { status: 201, chat };
-
-    return { status: 400, message: "Bad request" };
-  }, 
-  {
-    body: t.Object({
-      userId: t.String(),
-    }),
-    isSignIn: true,
-  })
-  .post("/group", async ({ body, getSignedUser, createGroup }) => {
-    const user = getSignedUser();
-
-    if (body.initialUsers.length < 1) return { status: 400, message: "Bad request" };
-    
-    const group = await createGroup(body.name, [user.id, ...body.initialUsers]);
-
-    if (!group) return { status: 400, message: "Bad request" };
-    return { status: 201, message: "Created" };
-  }, 
-  {
-    isSignIn: true,
-    body: t.Object({
-      name: t.String(),
-      initialUsers: t.Array(t.String()),
+        return await getUsersChats(user.id)!;
+    }, 
+    {  
+        isSignIn: true
     })
-  })
-  .get("/:id", async ({ set, params: { id }, getChatWithMessages, getSignedUser }) => {
-    const user = getSignedUser();
-    const chat = await getChatWithMessages(id, user.id);
+    .post("/private", async ({ error, body: { userId }, getSignedUser, createPrivateChat }) => {
+        const user = getSignedUser();
 
-    if (!chat) {
-        set.status = 404
-        return { status: 404, messages: "Not Found" };
-    }
+        const chat = await createPrivateChat([user.id, userId]);
+
+        if (!chat) return error(400, { message: "Bad request" });
+        return chat;
+    }, 
+    {
+        body: t.Object({
+            userId: t.String(),
+        }),
+        isSignIn: true,
+    })
+    .post("/group", async ({ error, body, getSignedUser, createGroup }) => {
+        const user = getSignedUser();
+
+        if (body.initialUsers.length < 1) return error(400, { message: "Bad request" });
     
-    return { status: 200, chat };
-  }, { isSignIn: true })
-  .post("/msg", async ({ server, body, getSignedUser, createMessage, getChatIfUserIn, getUsersFromChat }) => {
-    const user = getSignedUser();
-    const chat = await getChatIfUserIn(user.id, body.chatId);
+        const group = await createGroup(body.name, [user.id, ...body.initialUsers]);
 
-    if (!chat) return "TODO: return something better";
+        if (!group) return error(400, { message: "Bad request" });
+        return group;
+    }, 
+    {
+        isSignIn: true,
+        body: t.Object({
+            name: t.String(),
+            initialUsers: t.Array(t.String()),
+        })
+    })
+    .get("/:id", async ({ error, params: { id }, getChatWithMessages, getSignedUser }) => {
+        const user = getSignedUser();
+        const chat = await getChatWithMessages(id, user.id);
 
-    const msg = await createMessage({ ...body, userId: user.id });
+        if (!chat) return error(404, { messages: "Not Found" });
     
-    if (!msg) return { status: 400, message: "Bad request" };
+        return chat;
+    }, { isSignIn: true })
+    .post("/msg", async ({ error, server, body, getSignedUser, createMessage, getChatIfUserIn, getUsersFromChat }) => {
+        const user = getSignedUser();
+        const chat = await getChatIfUserIn(user.id, body.chatId);
 
-    const users = await getUsersFromChat(msg.chatId);
+        if (!chat) return "TODO: return something better";
+
+        const msg = await createMessage({ ...body, userId: user.id });
     
-    users?.forEach(user => server?.publish(`notify:${user.id}`, JSON.stringify(msg)));
+        if (!msg) return error(400, { message: "Bad request" });
 
-    return { status: 201, msg };
-  }, { isSignIn: true, body: t.Object({ chatId: t.String(), content: t.String() }) })
-  .ws("/", {
-    query: t.Object({
-      token: t.String(),
-    }),
-    body: t.String(),
+        const users = await getUsersFromChat(msg.chatId);
+    
+        users?.forEach(user => server?.publish(`notify:${user.id}`, JSON.stringify(msg)));
 
-    async open({ data: { query, jwt, getUser }, ...ws }) {
-      const { token } = query;
+        return msg;
+    }, { isSignIn: true, body: t.Object({ chatId: t.String(), content: t.String() }) })
+    .ws("/messages", {
+        query: t.Object({
+            token: t.String(),
+        }),
+        body: t.String(),
+
+        async open({ data: { query, jwt, getUser }, ...ws }) {
+            const { token } = query;
 
       
-      const payload = await jwt.verify(token);
-      if (!payload || !payload.sub) return ws.close();
+            const payload = await jwt.verify(token);
+            if (!payload || !payload.sub) return ws.close();
 
-      const user = await getUser(payload.sub);
-      if (!user) return ws.close();
+            const user = await getUser(payload.sub);
+            if (!user) return ws.close();
 
-      ws.subscribe(`notify:${user.id}`);
-    },
+            ws.subscribe(`notify:${user.id}`);
+        },
 
-    message(ws, chatId) {
-      console.log(chatId);
-      ws.subscribe(chatId);
-    },
-  });
+        message(ws, chatId) {
+            console.log(chatId);
+            ws.subscribe(chatId);
+        },
+    });
 

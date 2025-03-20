@@ -7,14 +7,14 @@ import { cors } from "@elysiajs/cors";
 const app = new Elysia();
 
 app
-  .use(cors())
-  .use(userRouter)
-  .use(authRouter)
-  .use(chatRouter)
-  .get("/", () => "Hello Elysia")
-  .listen(6969);
+    .use(cors())
+    .use(userRouter)
+    .use(authRouter)
+    .use(chatRouter)
+    .get("/", () => "Hello Elysia")
+    .listen(6969);
 
 
 console.log(
-  `Elysia is running at ${app.server?.hostname}:${app.server?.port}`
+    `Elysia is running at ${app.server?.hostname}:${app.server?.port}`
 );

@@ -2,7 +2,7 @@
   "name": "backend",
   "version": "1.0.50",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint --fix",
     "dev": "bun run --watch src/main.ts",
     "build": "bun build ./src/main.ts --target=bun --outfile=./build/app.js",
     "start": "bun run ./build/app.js"
@@ -11,14 +11,19 @@
     "@elysiajs/cors": "^1.2.0",
     "@elysiajs/jwt": "^1.2.0",
     "@elysiajs/swagger": "^1.2.2",
-    "@prisma/client": "^6.4.1",
+    "@prisma/client": "^6.5.0",
     "elysia": "latest",
-    "openid-client": "^6.3.3"
+    "openid-client": "^6.3.4"
   },
   "devDependencies": {
+    "@eslint/js": "^9.22.0",
+    "@stylistic/eslint-plugin": "^4.2.0",
     "@types/openid-client": "^3.7.0",
     "bun-types": "latest",
-    "prisma": "^6.4.1"
+    "eslint": "^9.22.0",
+    "globals": "^16.0.0",
+    "prisma": "^6.5.0",
+    "typescript-eslint": "^8.26.1"
   },
   "module": "src/main.js"
 }
