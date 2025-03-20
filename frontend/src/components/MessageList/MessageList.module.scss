@@ -1,0 +1,32 @@
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.message {
+  background-color: var(--primary-color);
+  width: 60%;
+  max-width: 25rem;
+  .user {
+    padding: 1rem;
+    font-size: 1.5rem;
+    border-bottom: 2px solid var(--second-color);
+  }
+
+  .content {
+    padding: 1rem;
+    font-size: 1.25rem;
+  }
+}
+
+.left {
+  text-align: left;
+}
+
+.right {
+  margin-left: auto;
+  .user {
+    text-align: right;
+  }
+}

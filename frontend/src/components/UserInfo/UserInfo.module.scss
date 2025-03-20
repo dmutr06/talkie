@@ -1,0 +1,12 @@
+.info {
+  background-color: var(--primary-color);
+  flex: 0 1 4rem;
+  padding-inline: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.name {
+  font-size: 1.5rem;
+}
