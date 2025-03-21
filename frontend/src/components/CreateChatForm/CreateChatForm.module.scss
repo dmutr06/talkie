@@ -1,0 +1,21 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  margin-top: 4rem;
+}
+
+.input {
+  background-color: var(--background-color);
+  color: var(--text-color);
+  padding-inline: 1rem;
+  padding-block: 1rem;
+  font-size: 1.25rem;
+  outline: none;
+  border: none;
+  border-top: 2px solid var(--primary-color);
+  transition: 300ms all;
+
+  &:focus {
+    border-color: var(--second-color);
+  }
+}

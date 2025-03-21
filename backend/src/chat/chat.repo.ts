@@ -57,7 +57,6 @@ export const chatRepo = new Elysia({ name: "repo/chat" })
         },
         async createPrivateChat(users: [User["id"], User["id"]]): Promise<Chat | null> {
             if (await getPrivateChat(users)) return null;
-            if (!(await getUser(users[0]) && await getUser(users[1]))) return null;
 
             return prisma.chat.create({
                 data: {

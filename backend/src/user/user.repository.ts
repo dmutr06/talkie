@@ -16,6 +16,10 @@ export const userRepo = new Elysia({ name: "repo/user" })
         async getUser(id: User["id"]): Promise<User | null> {
             return prisma.user.findUnique({ where: { id } });
         },
+
+        async getUserByEmail(email: User["email"]): Promise<User | null> {
+            return prisma.user.findUnique({ where: { email } });
+        },
     
         async createUserOrGetIfExists(data: { email: string, name: string }): Promise<User> {
             const user = await prisma.user.findUnique({ where: { email: data.email } });

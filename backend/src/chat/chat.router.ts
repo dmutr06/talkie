@@ -17,17 +17,24 @@ export const chatRouter = new Elysia({ prefix: "/chats" })
     {  
         isSignIn: true
     })
-    .post("/private", async ({ error, body: { userId }, getSignedUser, createPrivateChat }) => {
-        const user = getSignedUser();
+    .post("/private", async ({ error, body: { userEmail }, getSignedUser, createPrivateChat, getUserByEmail }) => {
+        const creator = getSignedUser();
 
-        const chat = await createPrivateChat([user.id, userId]);
+        const user = await getUserByEmail(userEmail);
+
+        if (!user)
+            return error(404, { message: "Not Found" });
+        if (creator.id == user.id)
+            return error(400, { message: "Can't create chat with yourself" });
+
+        const chat = await createPrivateChat([creator.id, user.id]);
 
         if (!chat) return error(400, { message: "Bad request" });
         return chat;
     }, 
     {
         body: t.Object({
-            userId: t.String(),
+            userEmail: t.String(),
         }),
         isSignIn: true,
     })

@@ -1,4 +1,4 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { type ReactNode, useEffect, useState  } from "react";
 import { AuthContext } from "../contexts/authContext";
 import useCookie from "react-use-cookie";
 import { User } from "../types/user";
@@ -12,11 +12,17 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     const [token, setToken, resetToken] = useCookie("token", "");
     const [userLoaded, setUserLoaded] = useState(false);
     const [user, setUser] = useState<User | null>(null);
-    const { get } = useHttp<User>("http://localhost:6969/user");
+    const { get, error } = useHttp<User>("http://localhost:6969/user");
 
     useEffect(() => {
         setUserLoaded(false);
-        get({ "Authorization": token }).then(setUser).finally(() => setUserLoaded(true));
+        get({ "Authorization": token }).then(user => {
+            if (!user) {
+                return;
+            }
+            setUser(user);
+            setUserLoaded(true);
+        }).finally(() => setUserLoaded(true));
     }, [token, get]);
 
     const setTokenCookie = (token: string, days: number) => {
@@ -34,6 +40,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
                     setToken: (token: string) => setTokenCookie(token, 7),
                     resetToken,
                     user,
+                    status: error?.status || null,
                 }}
             >{children}</AuthContext.Provider>
             : null

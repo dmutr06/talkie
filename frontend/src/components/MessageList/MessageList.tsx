@@ -9,6 +9,7 @@ interface MessageListProps {
     chat: ChatWithMessages,
 }
 
+//TODO: dont load all messages at once 
 export default function MessageList({ chat }: MessageListProps) {
     const { user } = useAuth();
     return (

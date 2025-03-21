@@ -28,7 +28,7 @@ interface UnknownError extends GeneralError<unknown> {
     status: null,
 }
 
-type HttpError<TError> = UnknownError | RequestError<TError>; 
+export type HttpError<TError> = UnknownError | RequestError<TError>; 
 
 export function useHttp<TData, TError = unknown>(
     url: string,

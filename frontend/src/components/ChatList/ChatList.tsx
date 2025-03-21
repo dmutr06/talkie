@@ -3,26 +3,16 @@ import { Chat } from "../../types/chat";
 import Button from "../ui/Button";
 
 import styles from "./ChatList.module.scss";
-import { useEffect, useState } from "react";
-import { useHttp } from "../../hooks/http.hook";
-import { useAuth } from "../../hooks/auth.hook";
 import { getChatName } from "../../utils/chat";
 import { User } from "../../types/user";
+import { useAuth } from "../../hooks/auth.hook";
 
-export default function ChatList() {
-    const { token, user } = useAuth();
-    const [chats, setChats] = useState<Chat[] | null>(null);
-    const { get, error } = useHttp<Chat[]>("http://localhost:6969/chats");
+interface ChatListProps {
+    chats: Chat[],
+}
 
-    useEffect(() => {
-        get({ "Authorization": token }).then(setChats);
-    }, [get, token]);
-
-    useEffect(() => {
-        // TODO: do something better, maybe nothing
-        console.log(error);
-    }, [error]);
-
+export default function ChatList({ chats }: ChatListProps) {
+    const { user } = useAuth();
     return (
         <ul className={styles.list}>
             {chats?.map(chat => <ChatListItem key={chat.id} chat={chat} user={user} />)}

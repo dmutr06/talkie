@@ -32,11 +32,6 @@ export default function Chat() {
         ref.current?.scrollTo({ top: ref.current.scrollHeight });
     }, [chat]);
 
-    useEffect(() => {
-        if (error)
-            console.log(error);
-    }, [error]);
-
     return (
         <div className={styles.chat}>
             <div className={styles.name}>
