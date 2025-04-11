@@ -6,12 +6,12 @@ import { useNavigate } from "react-router-dom";
 import styles from "./Auth.module.scss";
 
 export default function Auth() {
-    const { token } = useAuth(true);
+    const { user } = useAuth(true);
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (token) navigate("/chats");
-    }, [token, navigate]);
+        if (user) navigate("/chats");
+    }, [user, navigate]);
 
     const auth = () => {
         window.location.href = "http://localhost:6969/auth/google";

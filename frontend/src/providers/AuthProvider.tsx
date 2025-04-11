@@ -10,20 +10,38 @@ interface AuthProviderProps {
 
 export default function AuthProvider({ children }: AuthProviderProps) {
     const [token, setToken, resetToken] = useCookie("token", "");
-    const [userLoaded, setUserLoaded] = useState(false);
     const [user, setUser] = useState<User | null>(null);
-    const { get, error } = useHttp<User>("http://localhost:6969/user");
+    const [userLoaded, setUserLoaded] = useState<boolean>(false);
+    const { get, error, loading } = useHttp<User>("http://localhost:6969/user");
 
     useEffect(() => {
-        setUserLoaded(false);
-        get({ "Authorization": token }).then(user => {
-            if (!user) {
-                return;
+        (async () => {
+          if (token) {
+            setUserLoaded(false);
+            const maybeUser = await get({
+              "Authorization": token,
+            });
+            if (maybeUser)
+                setUser(maybeUser);
+            else {
+                setUser(null);
             }
-            setUser(user);
+
             setUserLoaded(true);
-        }).finally(() => setUserLoaded(true));
+          } else {
+            setUser(null);
+            setUserLoaded(true);
+          }
+        })();
     }, [token, get]);
+
+    useEffect(() => {
+      if (error) {
+        if (error.status == 401) {
+            resetToken();
+        }
+      }
+    }, [error]);
 
     const setTokenCookie = (token: string, days: number) => {
         setToken(token, {
@@ -33,17 +51,20 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     };
 
     return (
-        userLoaded ?
-            <AuthContext.Provider 
-                value={{
-                    token,
-                    setToken: (token: string) => setTokenCookie(token, 7),
-                    resetToken,
-                    user,
-                    status: error?.status || null,
-                }}
-            >{children}</AuthContext.Provider>
-            : null
-        
+      <>
+        {error ? <p>Error...</p> : null}
+        {loading ? <p>Loading...</p> : null}
+        {userLoaded ?
+              <AuthContext.Provider 
+                  value={{
+                      token,
+                      setToken: (token: string) => setTokenCookie(token, 7),
+                      resetToken,
+                      user,
+                      status: error?.status || null,
+                  }}
+              >{children}</AuthContext.Provider>
+              : null}
+        </>
     );
 }

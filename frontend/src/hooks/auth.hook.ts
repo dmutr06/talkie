@@ -14,12 +14,17 @@ export function useAuth<DontCheck extends boolean = false>
     useEffect(() => {
         if (!dontCheck && !data.token) 
             return navigate("/auth");
-        if (!dontCheck && !data.user) {
-            if (data.status == 401) {
-                return navigate("/auth");
+
+        if (!dontCheck) {
+            if (!data.user) {
+                if (data.status == 401) {
+                    data.resetToken();
+                    navigate("/auth");
+                }
+                else
+                    navigate("/error");
             }
-            return navigate("/error");
-        } 
+        }
     }, [data, dontCheck, navigate]);
 
     return {
