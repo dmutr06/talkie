@@ -12,7 +12,7 @@ import { useHttp } from "../../hooks/http.hook";
 export default function Dashboard() {
     const { token } = useAuth();
     const [chats, setChats] = useState<Chat[] | null>(null);
-    const { get } = useHttp<Chat[]>("http://localhost:6969/chats");
+    const { get, loading } = useHttp<Chat[]>(`${import.meta.env.VITE_API_ORIGIN}/chats`);
 
     useEffect(() => {
         get({ "Authorization": token }).then(setChats);
@@ -28,7 +28,9 @@ export default function Dashboard() {
             <div className={styles.left}>
                 <h1 className={styles.header}>Talkie</h1>
                 <div className={styles.list}>
-                    <ChatList chats={chats || []} />
+                    <div className={styles.scroll}>
+                        <ChatList chats={chats || []} />
+                    </div>
                 </div>
                 <div className={styles.new}>
                     <CreateChatForm addNewChat={addNewChat} />

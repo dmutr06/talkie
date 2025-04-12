@@ -12,7 +12,7 @@ interface MessageFormProps {
 export default function MessageForm({ chatId }: MessageFormProps) {
     const [input, setInput] = useState("");
     const { token } = useAuth();
-    const { post, loading, error } = useHttp("http://localhost:6969/chats/msg");
+    const { post, loading, error } = useHttp(`${import.meta.env.VITE_API_ORIGIN}/chats/msg`);
 
     const sendMessage = async (e: FormEvent) => {
         e.preventDefault();

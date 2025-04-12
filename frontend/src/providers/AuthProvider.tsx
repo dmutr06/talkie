@@ -3,6 +3,7 @@ import { AuthContext } from "../contexts/authContext";
 import useCookie from "react-use-cookie";
 import { User } from "../types/user";
 import { useHttp } from "../hooks/http.hook";
+import Spinner from "../components/ui/Spinner";
 
 interface AuthProviderProps {
     children: ReactNode | ReactNode[],
@@ -12,7 +13,7 @@ export default function AuthProvider({ children }: AuthProviderProps) {
     const [token, setToken, resetToken] = useCookie("token", "");
     const [user, setUser] = useState<User | null>(null);
     const [userLoaded, setUserLoaded] = useState<boolean>(false);
-    const { get, error, loading } = useHttp<User>("http://localhost:6969/user");
+    const { get, error, loading } = useHttp<User>(`${import.meta.env.VITE_API_ORIGIN}/user`);
 
     useEffect(() => {
         (async () => {
@@ -52,8 +53,6 @@ export default function AuthProvider({ children }: AuthProviderProps) {
 
     return (
       <>
-        {error ? <p>Error...</p> : null}
-        {loading ? <p>Loading...</p> : null}
         {userLoaded ?
               <AuthContext.Provider 
                   value={{

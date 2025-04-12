@@ -14,7 +14,7 @@ interface CreateChatFormProps {
 export default function CreateChatForm({ addNewChat }: CreateChatFormProps) {
     const { token } = useAuth();
     const [email, setEmail] = useState("");
-    const { post } = useHttp<Chat>("http://localhost:6969/chats/private");
+    const { post } = useHttp<Chat>(`${import.meta.env.VITE_API_ORIGIN}/chats/private`);
 
     const createChat = async (e: FormEvent) => {
         e.preventDefault();

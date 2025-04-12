@@ -36,3 +36,21 @@
   flex-grow: 1;
   flex-direction: column-reverse;
 }
+
+.scroll {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  overflow-y: overlay;
+  min-height: 0;
+  max-height: 30vh;
+  margin-top: 2rem;
+
+  &::-webkit-scrollbar {
+    width: 0.5rem;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--primary-color);
+  }
+}
